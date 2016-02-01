@@ -1,0 +1,15 @@
+{
+  "name": "pixivapi",
+  "version": "0.0.1",
+  "description": "Call Pixiv mobile client api with Node.JS",
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.69.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "-t"
+  },
+  "author": "imi415",
+  "license": "MIT"
+}
