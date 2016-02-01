@@ -11,5 +11,17 @@
     "test": "-t"
   },
   "author": "imi415",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imi415/PixivAPI.git"
+  },
+  "keywords": [
+    "Pixiv",
+    "API"
+  ],
+  "bugs": {
+    "url": "https://github.com/imi415/PixivAPI/issues"
+  },
+  "homepage": "https://github.com/imi415/PixivAPI#readme"
 }
