@@ -121,16 +121,19 @@ function saveUserInfo(user){
 
 function loadUserInfo(callback){
   fs.stat('./config.json', (err, data) => {
-    if (err) fs.writeFileSync('./config.json', '{"status": "-1"}', (err) => {
+    if (err) fs.writeFile('./config.json', '{"status": "-1"}', (err) => {
       console.log('New config created');
+      callback(JSON.parse('{}'));
     });
-    fs.readFile('./config.json', (err, data) =>{
+    else{
+      fs.readFile('./config.json', (err, data) =>{
       if(err){
         console.log(err);
         callback(JSON.parse('{}'));
       }
       callback(JSON.parse(data.toString()));
     });
+  }
   });
 
 }
