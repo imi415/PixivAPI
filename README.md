@@ -1,5 +1,5 @@
 # PixivAPI
-A test-only API package for pixiv. 
+A test-only API package for pixiv.
 Require:Node.JS 4.0.0 and later.  
 [![Build Status](https://travis-ci.org/imi415/PixivAPI.svg?branch=master)](https://travis-ci.org/imi415/PixivAPI)
 #Usage
@@ -35,3 +35,17 @@ pixiv.getUserFollowing(userId, userInfo, (res) => {
   });
 ```
 The list is an array which contains a brief profile infomation of each user.
+Get user's illustrations  
+```javascript
+pixiv.getUserIllustrate(userId, userInfo, (res) => {
+    //do something
+  });
+  ```
+The list is an array which contains illustration objects.  
+Get user's favorite works  
+```javascript
+pixiv.getUserFavorite(userId, userInfo, (res) => {
+    //do something
+  });
+  ```
+The list is also an array which contains illustration objects.

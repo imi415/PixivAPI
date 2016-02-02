@@ -52,6 +52,38 @@ exports.getUserFollowing = function getUserFollowing(userId, userInfo, callback)
   });
 }
 
+exports.getUserIllustrate = function getUserIllustrate(userId, userInfo, callback) {
+  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  + userId
+  + '/works.json?image_sizes=px_128x128%2Cpx_480mw%2Clarge&page=1&per_page=50&get_secure_url=1';
+  request({
+    url: URL,
+    headers: {
+      'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+      'User-Agent': 'PixivAndroidApp/4.9.11'
+    }
+  }, (err, response, body) => {
+    if(err) console.log(err);
+    callback(JSON.parse(body));
+  });
+}
+
+exports.getUserFavorite = function getUserFavorite(userId, userInfo, callback) {
+  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  + userId
+  + '/favorite_works.json?image_sizes=px_128x128%2Cpx_480mw%2Clarge&page=1&per_page=50&publicity=public&get_secure_url=1';
+  request({
+    url: URL,
+    headers: {
+      'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+      'User-Agent': 'PixivAndroidApp/4.9.11'
+    }
+  }, (err, response, body) => {
+    if(err) console.log(err);
+    callback(JSON.parse(body));
+  });
+}
+
 function oAuth(username, password, callback){
   var formData = {
     client_id: 'BVO2E8vAAikgUBW8FYpi6amXOjQj',
@@ -89,14 +121,15 @@ function saveUserInfo(user){
 
 function loadUserInfo(callback){
   fs.stat('./config.json', (err, data) => {
-    if (err) fs.writeFile('./config.json', '{"status": "-1"}', (err) => {
-      fs.readFile('./config.json', (err, data) =>{
-        if(err){
-          console.log(err);
-          callback(JSON.parse('{}'));
-        }
-        callback(JSON.parse(data.toString()));
-      });
+    if (err) fs.writeFileSync('./config.json', '{"status": "-1"}', (err) => {
+      console.log('New config created');
+    });
+    fs.readFile('./config.json', (err, data) =>{
+      if(err){
+        console.log(err);
+        callback(JSON.parse('{}'));
+      }
+      callback(JSON.parse(data.toString()));
     });
   });
 
