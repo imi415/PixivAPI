@@ -1,5 +1,6 @@
 # PixivAPI
-A test-only API package for pixiv.  
+A test-only API package for pixiv. 
+Require:Node.JS 4.0.0 and later.  
 [![Build Status](https://travis-ci.org/imi415/PixivAPI.svg?branch=master)](https://travis-ci.org/imi415/PixivAPI)
 #Usage
 Create an config object which contains your pixiv username and password.  
