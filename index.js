@@ -21,6 +21,37 @@ exports.authenticate = function authenticate(user, callback){
   });
 }
 
+exports.getUserProfile = function getUserProfile(userId, userInfo, callback) {
+  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  + userId
+  + '.json?profile_image_sizes=px_170x170&include_stats=1&include_profile=1&include_contacts=1&include_workspace=1&get_secure_url=1';
+  request({
+    url: URL,
+    headers: {
+      'Authorization': 'Bearer ' + userInfo.user.response.access_token
+    }
+  }, (err, response, body) => {
+    if(err) console.log(err);
+    callback(JSON.parse(body));
+  });
+}
+
+exports.getUserFollowing = function getUserFollowing(userId, userInfo, callback) {
+  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  + userId
+  + '/following.json?profile_image_sizes=px_170x170&include_stats=1&include_profile=1&include_contacts=1&include_workspace=1&get_secure_url=1';
+  request({
+    url: URL,
+    headers: {
+      'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+      'User-Agent': 'PixivAndroidApp/4.9.11'
+    }
+  }, (err, response, body) => {
+    if(err) console.log(err);
+    callback(JSON.parse(body));
+  });
+}
+
 function oAuth(username, password, callback){
   var formData = {
     client_id: 'BVO2E8vAAikgUBW8FYpi6amXOjQj',
