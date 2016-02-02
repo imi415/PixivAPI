@@ -1,16 +1,34 @@
 var request = require('request');
+var fs = require('fs');
 
-oAuth('imi415.public@gmail.com', 'Sim14154');
+exports.authenticate = function authenticate(user, callback){
+  loadUserInfo((userInfo) => {
+    if(!userInfo){
+      oAuth(user.username, user.password, (res) => {
+        userInfo = res;
+        saveUserInfo(userInfo);
+        callback(userInfo);
+      });
+    }
+    else if(userInfo.username != user.username || !verifyUserInfo(userInfo)) {
+      oAuth(user.username, user.password, (res) => {
+        userInfo = res;
+        saveUserInfo(userInfo);
+        callback(userInfo);
+      });
+    }
+    else callback(userInfo);
+  });
+}
 
-function oAuth(username, password){
+function oAuth(username, password, callback){
   var formData = {
     client_id: 'BVO2E8vAAikgUBW8FYpi6amXOjQj',
     client_secret: 'LI1WsFUDrrquaINOdarrJclCrkTtc3eojCOswlog',
     grant_type: 'password',
     username: username,
     password: password,
-    device_token: 'pixiv',
-
+    device_token: 'pixiv'
   };
   request.post({
     url: 'https://oauth.secure.pixiv.net/auth/token',
@@ -19,6 +37,39 @@ function oAuth(username, password){
     },
     formData: formData
   }, (error, response, body) => {
-    console.log(body);
+    //console.log(body);
+    var resObject = JSON.parse(body);
+    //console.log(resObject);
+    var resultObject = {
+      timestamp: Math.floor( new Date().getTime() / 1000 ),
+      username: username,
+      password: password,
+      user: resObject
+    }
+    callback(resultObject);
   });
+}
+
+function saveUserInfo(user){
+  fs.writeFile('./config.json', JSON.stringify(user), (err) => {
+    if(err) console.log(err);
+  });
+}
+
+function loadUserInfo(callback){
+  fs.readFile('./config.json', (err, data) =>{
+    if(err){
+      console.log(err);
+      callback(JSON.parse('{}'));
+    }
+    callback(JSON.parse(data.toString()));
+  });
+}
+
+function verifyUserInfo(user){
+  //console.log(Math.floor(user.timestamp));
+  //console.log(Math.floor(user.user.response.expires_in));
+  //console.log(Math.floor( new Date().getTime() / 1000 ));
+  if(Math.floor(user.timestamp) + Math.floor(user.user.response.expires_in) > Math.floor( new Date().getTime() / 1000 )) return true;
+  else return false;
 }
