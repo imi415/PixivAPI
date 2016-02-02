@@ -10,7 +10,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "npm run test-cov && cat ./coverage/lcov.info | codecov && cat ./coverage/lcov.info | coveralls"
+    "test": "node test.js"
   },
   "author": "imi415",
   "license": "MIT",
