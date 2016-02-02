@@ -88,13 +88,18 @@ function saveUserInfo(user){
 }
 
 function loadUserInfo(callback){
-  fs.readFile('./config.json', (err, data) =>{
-    if(err){
-      console.log(err);
-      callback(JSON.parse('{}'));
-    }
-    callback(JSON.parse(data.toString()));
+  fs.stat('./config.json', (err, data) => {
+    if (err) fs.writeFile('./config.json', '{"status": "-1"}', (err) => {
+      fs.readFile('./config.json', (err, data) =>{
+        if(err){
+          console.log(err);
+          callback(JSON.parse('{}'));
+        }
+        callback(JSON.parse(data.toString()));
+      });
+    });
   });
+
 }
 
 function verifyUserInfo(user){

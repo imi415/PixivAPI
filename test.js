@@ -7,7 +7,8 @@ api.authenticate({username: 'imi415.public@gmail.com', password: 'Sim14154'}, (u
   });
 api.getUserFollowing(586538, userInfo, (res) => {
     console.log(res);
-    if(userInfo.user.response.id == 17075947) process.exit(0);
+    console.log(userInfo.user.response.user.id);
+    if(userInfo.user.response.user.id == 17075947) process.exit(0);
     else process.exit(1);
   });
 });
