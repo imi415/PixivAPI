@@ -4,7 +4,8 @@
   "description": "Call Pixiv mobile client api with Node.JS",
   "main": "index.js",
   "dependencies": {
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "form-data": "^0.2.0"
   },
   "devDependencies": {},
   "scripts": {
