@@ -1,5 +1,8 @@
+'use strict';
+
 var request = require('request');
 var fs = require('fs');
+var userAgent = 'PixivAndroidApp/4.9.11';
 
 exports.authenticate = function authenticate(user, callback){
   loadUserInfo((userInfo) => {
@@ -22,7 +25,7 @@ exports.authenticate = function authenticate(user, callback){
 }
 
 exports.getUserProfile = function getUserProfile(userId, userInfo, callback) {
-  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  let URL = 'https://public-api.secure.pixiv.net/v1/users/'
   + userId
   + '.json?profile_image_sizes=px_170x170&include_stats=1&include_profile=1&include_contacts=1&include_workspace=1&get_secure_url=1';
   request({
@@ -37,14 +40,14 @@ exports.getUserProfile = function getUserProfile(userId, userInfo, callback) {
 }
 
 exports.getUserFollowing = function getUserFollowing(userId, userInfo, callback) {
-  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  let URL = 'https://public-api.secure.pixiv.net/v1/users/'
   + userId
   + '/following.json?profile_image_sizes=px_170x170&include_stats=1&include_profile=1&include_contacts=1&include_workspace=1&get_secure_url=1';
   request({
     url: URL,
     headers: {
       'Authorization': 'Bearer ' + userInfo.user.response.access_token,
-      'User-Agent': 'PixivAndroidApp/4.9.11'
+      'User-Agent': userAgent
     }
   }, (err, response, body) => {
     if(err) console.log(err);
@@ -52,15 +55,15 @@ exports.getUserFollowing = function getUserFollowing(userId, userInfo, callback)
   });
 }
 
-exports.getUserIllustrate = function getUserIllustrate(userId, userInfo, callback) {
-  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+exports.getUserWork = function getUserWork(userId, userInfo, callback) {
+  let URL = 'https://public-api.secure.pixiv.net/v1/users/'
   + userId
   + '/works.json?image_sizes=px_128x128%2Cpx_480mw%2Clarge&page=1&per_page=50&get_secure_url=1';
   request({
     url: URL,
     headers: {
       'Authorization': 'Bearer ' + userInfo.user.response.access_token,
-      'User-Agent': 'PixivAndroidApp/4.9.11'
+      'User-Agent': userAgent
     }
   }, (err, response, body) => {
     if(err) console.log(err);
@@ -69,14 +72,30 @@ exports.getUserIllustrate = function getUserIllustrate(userId, userInfo, callbac
 }
 
 exports.getUserFavorite = function getUserFavorite(userId, userInfo, callback) {
-  var URL = 'https://public-api.secure.pixiv.net/v1/users/'
+  let URL = 'https://public-api.secure.pixiv.net/v1/users/'
   + userId
   + '/favorite_works.json?image_sizes=px_128x128%2Cpx_480mw%2Clarge&page=1&per_page=50&publicity=public&get_secure_url=1';
   request({
     url: URL,
     headers: {
       'Authorization': 'Bearer ' + userInfo.user.response.access_token,
-      'User-Agent': 'PixivAndroidApp/4.9.11'
+      'User-Agent': userAgent
+    }
+  }, (err, response, body) => {
+    if(err) console.log(err);
+    callback(JSON.parse(body));
+  });
+}
+
+exports.getWorkProfile = function getWorkProfile(workId, userInfo, callback) {
+  let URL = 'https://public-api.secure.pixiv.net/v1/works/'
+  + workId
+  + '.json?include_sanity_level=true&image_sizes=px_480mw%2Clarge&include_stats=true&caption_format=html&get_secure_url=1 ';
+  request({
+    url: URL,
+    headers: {
+      'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+      'User-Agent': userAgent
     }
   }, (err, response, body) => {
     if(err) console.log(err);
@@ -85,7 +104,7 @@ exports.getUserFavorite = function getUserFavorite(userId, userInfo, callback) {
 }
 
 function oAuth(username, password, callback){
-  var formData = {
+  let formData = {
     client_id: 'BVO2E8vAAikgUBW8FYpi6amXOjQj',
     client_secret: 'LI1WsFUDrrquaINOdarrJclCrkTtc3eojCOswlog',
     grant_type: 'password',
@@ -101,9 +120,9 @@ function oAuth(username, password, callback){
     formData: formData
   }, (error, response, body) => {
     //console.log(body);
-    var resObject = JSON.parse(body);
+    let resObject = JSON.parse(body);
     //console.log(resObject);
-    var resultObject = {
+    let resultObject = {
       timestamp: Math.floor( new Date().getTime() / 1000 ),
       username: username,
       password: password,
@@ -139,9 +158,6 @@ function loadUserInfo(callback){
 }
 
 function verifyUserInfo(user){
-  //console.log(Math.floor(user.timestamp));
-  //console.log(Math.floor(user.user.response.expires_in));
-  //console.log(Math.floor( new Date().getTime() / 1000 ));
   if(Math.floor(user.timestamp) + Math.floor(user.user.response.expires_in) > Math.floor( new Date().getTime() / 1000 )) return true;
   else return false;
 }
