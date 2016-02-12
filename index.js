@@ -103,6 +103,22 @@ exports.getWorkProfile = function getWorkProfile(workId, userInfo, callback) {
   });
 }
 
+exports.downloadWork = function downloadWork(workProfile, path, callback) {
+  let referer = 'http://spapi.pixiv-app.net/single';
+  let URL = workProfile.response[0].image_urls.large;
+  let filename = URL.split('/')[URL.split('/').length - 1];
+  request({
+    url: URL,
+    headers: {
+      'User-Agent': userAgent,
+      'Referer': referer
+    }
+  }, (err, response, body) => {
+    if(err) console.log(err);
+    callback(body);
+  }).pipe(fs.createWriteStream(path + filename));
+}
+
 function oAuth(username, password, callback){
   let formData = {
     client_id: 'BVO2E8vAAikgUBW8FYpi6amXOjQj',

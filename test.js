@@ -52,12 +52,16 @@ pixiv.authenticate({username: 'imi415.public@gmail.com', password: 'Sim14154'}, 
 
   //Test6: getWorkProfile
   pixiv.getWorkProfile(53610270, userInfo, (res) =>{
-    console.log(res);
+    //console.log(res);
     let status = colors.red(1);;
     if(res.status == 'success') status = colors.green(0);
     resultTable.push([colors.blue('getWorkProfile'), status]);
-    displayResults();
+    pixiv.downloadWork(res, './', ()=>{
+      resultTable.push([colors.blue('downloadWork'), colors.green(0)]);
+      displayResults();
+    });
   });
+
 });
 
 function displayResults(){
