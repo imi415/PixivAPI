@@ -3,6 +3,7 @@
 var request = require('request');
 var fs = require('fs');
 var userAgent = 'PixivAndroidApp/4.9.11';
+var configLocation = __dirname + '/config.json';
 
 exports.authenticate = function authenticate(user, callback){
   loadUserInfo((userInfo) => {
@@ -149,19 +150,19 @@ function oAuth(username, password, callback){
 }
 
 function saveUserInfo(user){
-  fs.writeFile('./config.json', JSON.stringify(user), (err) => {
+  fs.writeFile(configLocation, JSON.stringify(user), (err) => {
     if(err) console.log(err);
   });
 }
 
 function loadUserInfo(callback){
-  fs.stat('./config.json', (err, data) => {
-    if (err) fs.writeFile('./config.json', '{"status": "-1"}', (err) => {
+  fs.stat(configLocation, (err, data) => {
+    if (err) fs.writeFile(configLocation, '{"status": "-1"}', (err) => {
       console.log('New config created');
       callback(JSON.parse('{}'));
     });
     else{
-      fs.readFile('./config.json', (err, data) =>{
+      fs.readFile(configLocation, (err, data) =>{
       if(err){
         console.log(err);
         callback(JSON.parse('{}'));
