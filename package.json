@@ -1,6 +1,6 @@
 {
   "name": "pixivapi",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Call Pixiv mobile client api with Node.JS",
   "main": "index.js",
   "dependencies": {
