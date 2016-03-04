@@ -63,3 +63,10 @@ pixiv.downloadWork(workProfile, path, (res) => {
   });
   ```
 workProfile can use directly from getWorkProfile. The res object contains the response body.
+Download All work by user ID
+```javascript
+pixiv.downloadAllWorkByUser(userId, userInfo, path, (ststus) => {
+    //do something
+  });
+```
+It will download all works into seperately directories, named by workId.

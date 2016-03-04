@@ -58,10 +58,14 @@ pixiv.authenticate({username: 'imi415.public@gmail.com', password: 'Sim14154'}, 
     resultTable.push([colors.blue('getWorkProfile'), status]);
     pixiv.downloadWork(res, './', ()=>{
       resultTable.push([colors.blue('downloadWork'), colors.green(0)]);
-      displayResults();
     });
   });
 
+  pixiv.downloadAllWorkByUser(27691, userInfo, './test/downloaded/', (res) => {
+    //console.log(res);
+    resultTable.push([colors.blue('downloadAllWorkByUser'), colors.green(0)]);
+    displayResults();
+  });
 });
 
 function displayResults(){
@@ -71,7 +75,7 @@ function displayResults(){
     let resultTableString = resultTable.toString();
     console.log(resultTableString);
     if(resultTableString.indexOf(colors.red('1')) != -1) is_success = false;
-    if(is_success) process.exit(0);
-    else process.exit(-1);
-  }, 10000);
+    //if(is_success) process.exit(0);
+    //else process.exit(-1);
+  }, 100000);
 }

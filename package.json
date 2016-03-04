@@ -12,7 +12,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node test.js"
+    "test": "DEBUG=true node test.js"
   },
   "author": "imi415",
   "license": "MIT",

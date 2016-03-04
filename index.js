@@ -108,16 +108,56 @@ exports.downloadWork = function downloadWork(workProfile, path, callback) {
   let referer = 'http://spapi.pixiv-app.net/single';
   let URL = workProfile.response[0].image_urls.large;
   let filename = URL.split('/')[URL.split('/').length - 1];
-  request({
-    url: URL,
-    headers: {
-      'User-Agent': userAgent,
-      'Referer': referer
+  console.log(filename);
+  fs.stat(path, (error, data) => {
+    if(error) {
+      console.log('D_!E');
+      fs.mkdir(path, () => {
+        request({
+          url: URL,
+          headers: {
+            'User-Agent': userAgent,
+            'Referer': referer
+          }
+        }, (err, response, body) => {
+          if(err) console.log(err);
+          callback(body);
+        }).pipe(fs.createWriteStream(path + filename));
+
+      });
     }
-  }, (err, response, body) => {
-    if(err) console.log(err);
-    callback(body);
-  }).pipe(fs.createWriteStream(path + filename));
+    else {
+      fs.stat(path + filename, (error, data) => {
+        if(error) {
+          console.log('D_E,F_!E');
+          request({
+            url: URL,
+            headers: {
+              'User-Agent': userAgent,
+              'Referer': referer
+            }
+          }, (err, response, body) => {
+            if(err) console.log(err);
+            callback(body);
+          }).pipe(fs.createWriteStream(path + filename));
+        }
+      });
+    }
+    console.log('D_E,F_E');
+  });
+}
+
+exports.downloadAllWorkByUser = function downloadAllWorkByUser(userId, userInfo, path, callback) {
+  this.getUserWork(userId, userInfo,(UserWork) => {
+    UserWork.response.forEach((value, index, array) => {
+      this.getWorkProfile(value.id, userInfo, (workProfile) => {
+        this.downloadWork(workProfile, path + value.id + '/', (result) => {
+          console.log('Downloaded ' + value.id);
+        });
+      });
+    });
+    callback('done');
+  });
 }
 
 function oAuth(username, password, callback){
