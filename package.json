@@ -4,11 +4,12 @@
   "description": "Call Pixiv mobile client api with Node.JS",
   "main": "index.js",
   "dependencies": {
-    "request": "^2.69.0",
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
     "form-data": "^0.2.0",
     "fs": "^0.0.2",
-    "colors": "^1.1.2",
-    "cli-table": "^0.3.1"
+    "mkdirp": "^0.5.1",
+    "request": "^2.69.0"
   },
   "devDependencies": {},
   "scripts": {

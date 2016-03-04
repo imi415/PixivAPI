@@ -2,6 +2,7 @@
 
 var request = require('request');
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 var userAgent = 'PixivAndroidApp/4.9.11';
 var configLocation = __dirname + '/config.json';
 
@@ -112,7 +113,9 @@ exports.downloadWork = function downloadWork(workProfile, path, callback) {
   fs.stat(path, (error, data) => {
     if(error) {
       console.log('D_!E');
-      fs.mkdir(path, () => {
+      console.log(path);
+      mkdirp(path, (err) => {
+        if (err) console.log(err);
         request({
           url: URL,
           headers: {
@@ -141,9 +144,9 @@ exports.downloadWork = function downloadWork(workProfile, path, callback) {
             callback(body);
           }).pipe(fs.createWriteStream(path + filename));
         }
+        else console.log('D_E,F_E');
       });
     }
-    console.log('D_E,F_E');
   });
 }
 

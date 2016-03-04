@@ -61,7 +61,7 @@ pixiv.authenticate({username: 'imi415.public@gmail.com', password: 'Sim14154'}, 
     });
   });
 
-  pixiv.downloadAllWorkByUser(27691, userInfo, './test/downloaded/', (res) => {
+  pixiv.downloadAllWorkByUser(27691, userInfo, './test/downloaded2/', (res) => {
     //console.log(res);
     resultTable.push([colors.blue('downloadAllWorkByUser'), colors.green(0)]);
     displayResults();
