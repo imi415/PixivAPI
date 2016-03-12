@@ -27,6 +27,7 @@ exports.authenticate = function authenticate(user, callback){
 }
 
 exports.getUserProfile = function getUserProfile(userId, userInfo, callback) {
+  console.log(userInfo);
   let URL = 'https://public-api.secure.pixiv.net/v1/users/'
   + userId
   + '.json?profile_image_sizes=px_170x170&include_stats=1&include_profile=1&include_contacts=1&include_workspace=1&get_secure_url=1';
@@ -37,6 +38,7 @@ exports.getUserProfile = function getUserProfile(userId, userInfo, callback) {
     }
   }, (err, response, body) => {
     if(err) console.log(err);
+    //console.log(JSON.parse(body));
     callback(JSON.parse(body));
   });
 }
@@ -58,18 +60,25 @@ exports.getUserFollowing = function getUserFollowing(userId, userInfo, callback)
 }
 
 exports.getUserWork = function getUserWork(userId, userInfo, callback) {
-  let URL = 'https://public-api.secure.pixiv.net/v1/users/'
-  + userId
-  + '/works.json?image_sizes=px_128x128%2Cpx_480mw%2Clarge&page=1&per_page=50&get_secure_url=1';
-  request({
-    url: URL,
-    headers: {
-      'Authorization': 'Bearer ' + userInfo.user.response.access_token,
-      'User-Agent': userAgent
-    }
-  }, (err, response, body) => {
-    if(err) console.log(err);
-    callback(JSON.parse(body));
+  this.getUserProfile(userId, userInfo, (profile) =>{
+    let amount = profile.response[0].stats.works;
+    let URL = 'https://public-api.secure.pixiv.net/v1/users/'
+    + userId
+    + '/works.json?image_sizes=px_128x128%2Cpx_480mw%2Clarge&page=1&per_page='
+    + amount
+    + '&get_secure_url=1';
+    console.log(URL);
+    request({
+      url: URL,
+      headers: {
+        'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+        'User-Agent': userAgent
+      }
+    }, (err, response, body) => {
+      if(err) console.log(err);
+      //console.log(JSON.parse(body));
+      callback(JSON.parse(body));
+    });
   });
 }
 
@@ -93,6 +102,7 @@ exports.getWorkProfile = function getWorkProfile(workId, userInfo, callback) {
   let URL = 'https://public-api.secure.pixiv.net/v1/works/'
   + workId
   + '.json?include_sanity_level=true&image_sizes=px_480mw%2Clarge&include_stats=true&caption_format=html&get_secure_url=1 ';
+  console.log(URL);
   request({
     url: URL,
     headers: {
@@ -126,13 +136,12 @@ exports.downloadWork = function downloadWork(workProfile, path, callback) {
           if(err) console.log(err);
           callback(body);
         }).pipe(fs.createWriteStream(path + filename));
-
       });
     }
     else {
       fs.stat(path + filename, (error, data) => {
         if(error) {
-          console.log('D_E,F_!E');
+          console.log('D_E,I_!E');
           request({
             url: URL,
             headers: {
@@ -144,16 +153,73 @@ exports.downloadWork = function downloadWork(workProfile, path, callback) {
             callback(body);
           }).pipe(fs.createWriteStream(path + filename));
         }
-        else console.log('D_E,F_E');
+        else console.log('D_E,I_E');
+      });
+    }
+  });
+}
+
+exports.downloadWorkProfile = function downloadWorkProfile(workId, path, userInfo, callback) {
+  let URL = 'https://public-api.secure.pixiv.net/v1/works/'
+  + workId
+  + '.json?include_sanity_level=true&image_sizes=px_480mw%2Clarge&include_stats=true&caption_format=html&get_secure_url=1 ';
+  path = path + workId + '/';
+  fs.stat(path, (error, data) => {
+    if(error) {
+      console.log('D_!E');
+      console.log(path);
+      mkdirp(path, (err) => {
+        if (err) console.log(err);
+        request({
+          url: URL,
+          headers: {
+            'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+            'User-Agent': userAgent
+          }
+        }, (err, response, body) => {
+          if(err) console.log(err);
+          fs.writeFile(path + workId + '.json', body, (err) => {
+            if(err) console.log(err);
+            callback(JSON.parse(body));
+          });
+        });
+      });
+    }
+    else {
+      fs.stat(path + workId + '.json', (error, data) => {
+        if(error) {
+          console.log('D_E,M_!E');
+          request({
+            url: URL,
+            headers: {
+              'Authorization': 'Bearer ' + userInfo.user.response.access_token,
+              'User-Agent': userAgent
+            }
+          }, (err, response, body) => {
+            if(err) console.log(err);
+            fs.writeFile(path + workId + '.json', body, (err) => {
+              if(err) console.log(err);
+              callback(JSON.parse(body));
+            });
+          });
+        }
+        else {
+          console.log('D_E,M_E');
+          fs.readFile(path + workId + '.json', (error, data) => {
+            if(error) console.log(error);
+            callback(JSON.parse(data));
+          });
+        }
       });
     }
   });
 }
 
 exports.downloadAllWorkByUser = function downloadAllWorkByUser(userId, userInfo, path, callback) {
+  path = path + userId + '/';
   this.getUserWork(userId, userInfo,(UserWork) => {
     UserWork.response.forEach((value, index, array) => {
-      this.getWorkProfile(value.id, userInfo, (workProfile) => {
+      this.downloadWorkProfile(value.id, path, userInfo, (workProfile) => {
         this.downloadWork(workProfile, path + value.id + '/', (result) => {
           console.log('Downloaded ' + value.id);
         });
